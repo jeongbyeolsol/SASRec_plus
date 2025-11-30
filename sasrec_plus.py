@@ -529,22 +529,26 @@ class SASRecPipeline():
 
     def load_model(self, path=None):
         if path is None:
-            print('parh is needed!!!')
+            print('path is needed!!!')
             return
+
         checkpoint = torch.load(path, map_location=self.device)
 
-        # 모델 상태 로드
+        # 1) 모델 / 옵티마이저 로드
         self.model.load_state_dict(checkpoint["model_state"])
-
-        # 옵티마이저 상태 로드
         self.optimizer.load_state_dict(checkpoint["optimizer_state"])
 
-        # epoch / loss 히스토리 복구
-        self.epoch = checkpoint.get("epoch", 0)
-        self.val_loss = checkpoint.get("val_loss", {})
-        self.test_loss = checkpoint.get("test_loss", -1)
+        # 2) epoch / loss / metric 히스토리 복구
+        self.epoch         = checkpoint.get("epoch", 0)
+        self.val_loss      = checkpoint.get("val_loss", {})
+        self.val_hit_rate  = checkpoint.get("val_hit_rate", {})
+        self.val_ndcg      = checkpoint.get("val_ndcg", {})
+        self.test_loss     = checkpoint.get("test_loss", -1)
+        self.test_hit_rate = checkpoint.get("test_hit_rate", None)
+        self.test_ndcg     = checkpoint.get("test_ndcg", None)
 
         print(f"[INFO] Model loaded from {path}, epoch={self.epoch}")
+
 
     @torch.no_grad()
     def evaluate_sasrec_with_negatives(
