@@ -204,7 +204,7 @@ FFN의 차원을 늘린 후 다시 줄임
 pos = Linear(2d → d)
 """
 
-# 모델의 차원은 홀수임을 가정
+# 모델의 차원은 짝수임을 가정
 class SASRec(nn.Module):
   def __init__(self,
         num_items,
